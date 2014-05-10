@@ -25,21 +25,9 @@ var BheemServer = function() {
     self.setupVariables = function() {
         //  Set the environment variables we need.
         self.ipaddress = process.env.OPENSHIFT_NODEJS_IP;
-        var IPv4 = (function(){
-          var interfaces = require('os').networkInterfaces(),
-          IP;
-          for (var iface in interfaces) {
-              interfaces[iface].forEach(function(addr) {
-                  if (addr.family == 'IPv4') {
-                      IP = addr.address;
-                  }
-             });
-          }
-          return IP;
-        }());
-
-        self.port = process.env.OPENSHIFT_NODEJS_PORT || IPv4;
-
+        portfinder.getPort(function (err, port) {
+            self.port = process.env.OPENSHIFT_NODEJS_PORT || port;
+        });
 
         if (typeof self.ipaddress === "undefined") {
             //  Log errors on OpenShift but continue w/ 127.0.0.1 - this
@@ -149,24 +137,12 @@ var BheemServer = function() {
             self.app.get(r, self.routes[r]);
         }
         self.proxy = httpProxy.createProxyServer({target: 'http://api.themoviedb.org:80'});
-        
-        var IPv4 = (function(){
-          var interfaces = require('os').networkInterfaces(),
-          IP;
-          for (var iface in interfaces) {
-              interfaces[iface].forEach(function(addr) {
-                  if (addr.family == 'IPv4') {
-                      IP = addr.address;
-                  }
-             });
-          }
-          return IP;
-        }());
+     
+        portfinder.getPort(function (err, port) {
+          self.wss = new WebSocketServer({port:port});
+          console.log("WC:",port)
+        });
 
-        self.wss = new WebSocketServer({port:IPv4});
-
-        console.log("WS:",IPv4);
-        
         self.wss.on('connection', function(ws) {
             ws.on('message', function(message) {
                 console.log('received: %s', message);
