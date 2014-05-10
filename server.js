@@ -25,10 +25,8 @@ var BheemServer = function() {
     self.setupVariables = function() {
         //  Set the environment variables we need.
         self.ipaddress = process.env.OPENSHIFT_NODEJS_IP;
-        portfinder.getPort(function (err, port) {
-            self.port = process.env.OPENSHIFT_NODEJS_PORT;
-        });
-
+        self.port = process.env.OPENSHIFT_NODEJS_PORT;
+        
         if (typeof self.ipaddress === "undefined") {
             //  Log errors on OpenShift but continue w/ 127.0.0.1 - this
             //  allows us to run/test the app locally.
