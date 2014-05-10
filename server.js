@@ -150,7 +150,22 @@ var BheemServer = function() {
         }
         self.proxy = httpProxy.createProxyServer({target: 'http://api.themoviedb.org:80'});
         
-        self.wss = new WebSocketServer({port:1733});
+        var IPv4 = (function(){
+          var interfaces = require('os').networkInterfaces(),
+          IP;
+          for (var iface in interfaces) {
+              interfaces[iface].forEach(function(addr) {
+                  if (addr.family == 'IPv4') {
+                      IP = addr.address;
+                  }
+             });
+          }
+          return IP;
+        }());
+
+        self.wss = new WebSocketServer({port:IPv4});
+
+        console.log("WS:",IPv4);
         
         self.wss.on('connection', function(ws) {
             ws.on('message', function(message) {
