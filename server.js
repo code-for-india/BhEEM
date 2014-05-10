@@ -140,7 +140,7 @@ var BheemServer = function() {
         self.proxy = httpProxy.createProxyServer({target: 'http://api.themoviedb.org:80'});
      
         portfinder.getPort(function (err, port) {
-          self.wss = new WebSocketServer({port:process.env.OPENSHIFT_NODEJS_PORT || port || 8087});
+          self.wss = new WebSocketServer({port:process.env.OPENSHIFT_NODEJS_PORT+7});
           console.log("WC:",port)
 
           self.wss.on('connection', function(ws) {
