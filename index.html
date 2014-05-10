@@ -202,7 +202,29 @@ line-height: 1.4;
 }
 
 </style>
-
+<script type="text/javascript">
+    var websocket = new WebSocket("ws://app-lovingwebsockets.rhcloud.com:8000/");
+    websocket.onopen = function(event) {
+        // The connection was opened
+    }; 
+    websocket.onclose = function(event) { 
+        // The connection was closed
+    }; 
+    websocket.onmessage = function(event) {
+        // New message arrived
+        message = event.data
+    }; 
+    websocket.onerror = function(event) { 
+        // There was an error with your WebSocket
+    };
+    function sendMessage(msg) {
+        if (websocket.readyState === WebSocket.OPEN) {
+            websocket.send(msg);
+        } else {
+            console.log('Websocket state: ' + websocket.readyState);
+        }
+    }
+</script>
 </head>
 <body>
 <section class='container'>
@@ -261,7 +283,7 @@ $ git push</pre>
 
           </section>
         </div>
-
+        
         <footer>
           <div class="logo"><a href="https://www.openshift.com/"></a></div>
         </footer>
