@@ -5,7 +5,6 @@ var fs        = require('fs');
 var httpProxy = require('http-proxy');
 //var connection = require('./services/mysql/mysql');
 var WebSocketServer = require('ws').Server;
-var portfinder = require('portfinder');
 
 /**
  *  Define the sample application.
@@ -27,7 +26,7 @@ var BheemServer = function() {
         //  Set the environment variables we need.
         self.ipaddress = process.env.OPENSHIFT_NODEJS_IP;
         portfinder.getPort(function (err, port) {
-            self.port = port;
+            self.port = process.env.OPENSHIFT_NODEJS_PORT;
         });
 
         if (typeof self.ipaddress === "undefined") {
@@ -139,7 +138,6 @@ var BheemServer = function() {
         }
         self.proxy = httpProxy.createProxyServer({target: 'http://api.themoviedb.org:80'});
      
-        portfinder.getPort(function (err, port) {
           self.wss = new WebSocketServer({port:process.env.OPENSHIFT_NODEJS_PORT+7});
           console.log("WC:",port)
 
@@ -150,7 +148,6 @@ var BheemServer = function() {
             });
             ws.send('something');
           });
-        });
     };
 
 
