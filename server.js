@@ -27,7 +27,7 @@ var BheemServer = function() {
         //  Set the environment variables we need.
         self.ipaddress = process.env.OPENSHIFT_NODEJS_IP;
         portfinder.getPort(function (err, port) {
-            self.port = process.env.OPENSHIFT_NODEJS_PORT || port;
+            self.port = port;
         });
 
         if (typeof self.ipaddress === "undefined") {
