@@ -3,7 +3,7 @@
 var express   = require('express');
 var fs        = require('fs');
 var httpProxy = require('http-proxy');
-var connection = require('./services/mysql/mysql');
+//var connection = require('./services/mysql/mysql');
 var WebSocketServer = require('ws').Server;
 
 /**
@@ -106,9 +106,9 @@ var BheemServer = function() {
 
         self.routes['/'] = function(req, res) {
             res.setHeader('Content-Type', 'text/html');
-            var query = connection.query('INSERT INTO USER SET ?', req.query, function(err, result) {
+            /*var query = connection.query('INSERT INTO USER SET ?', req.query, function(err, result) {
               // Neat!
-            });
+            });*/
             res.send(self.cache_get('index.html') );
         };
 
