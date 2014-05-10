@@ -23,7 +23,7 @@ var BheemServer = function() {
      */
     self.setupVariables = function() {
         //  Set the environment variables we need.
-        self.ipaddress = process.env.OPENSHIFT_NODEJS_IP || "192.168.1.2";
+        self.ipaddress = process.env.OPENSHIFT_NODEJS_IP || 127.0.0.1;
         self.port      = process.env.OPENSHIFT_NODEJS_PORT || 8080;
 
         if (typeof self.ipaddress === "undefined") {
@@ -132,7 +132,7 @@ var BheemServer = function() {
         }
         self.proxy = httpProxy.createProxyServer({target: 'http://api.themoviedb.org:80'});
         
-        self.wss = new WebSocketServer({port:8080});
+        self.wss = new WebSocketServer({port:1337});
         
         self.wss.on('connection', function(ws) {
             ws.on('message', function(message) {
