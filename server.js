@@ -5,6 +5,7 @@ var fs        = require('fs');
 var httpProxy = require('http-proxy');
 //var connection = require('./services/mysql/mysql');
 var WebSocketServer = require('ws').Server;
+var portfinder = require('portfinder');
 
 /**
  *  Define the sample application.
