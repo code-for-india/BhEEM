@@ -142,14 +142,14 @@ var BheemServer = function() {
         portfinder.getPort(function (err, port) {
           self.wss = new WebSocketServer({port:port});
           console.log("WC:",port)
-        });
 
-        self.wss.on('connection', function(ws) {
+          self.wss.on('connection', function(ws) {
             ws.on('message', function(message) {
                 console.log('received: %s', message);
                 ws.send('Received: ' + message);
             });
             ws.send('something');
+          });
         });
     };
 
