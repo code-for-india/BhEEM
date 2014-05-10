@@ -1,13 +1,15 @@
 #!/bin/env node
 //  OpenShift sample Node application
-var express = require('express');
-var fs      = require('fs');
+var express   = require('express');
+var fs        = require('fs');
+var httpProxy = require('http-proxy');
 var connection = require('./services/mysql/mysql');
+var WebSocketServer = require('ws').Server;
 
 /**
  *  Define the sample application.
  */
-var SampleApp = function() {
+var BheemServer = function() {
 
     //  Scope.
     var self = this;
@@ -77,11 +79,13 @@ var SampleApp = function() {
         process.on('exit', function() { self.terminator(); });
 
         // Removed 'SIGPIPE' from the list - bugz 852598.
+        /*
         ['SIGHUP', 'SIGINT', 'SIGQUIT', 'SIGILL', 'SIGTRAP', 'SIGABRT',
          'SIGBUS', 'SIGFPE', 'SIGUSR1', 'SIGSEGV', 'SIGUSR2', 'SIGTERM'
         ].forEach(function(element, index, array) {
             process.on(element, function() { self.terminator(element); });
         });
+        */
     };
 
 
@@ -107,6 +111,14 @@ var SampleApp = function() {
             });
             res.send(self.cache_get('index.html') );
         };
+
+        self.routes['/api*'] = function(req, res) {
+            req.url = req.url.substring(4);
+            req.url += '?api_key=9673fbfd2537cc9da1ac0d935ed23711';
+
+            console.log(req.url);
+            self.proxy.web(req, res);
+        }
     };
 
 
@@ -116,12 +128,23 @@ var SampleApp = function() {
      */
     self.initializeServer = function() {
         self.createRoutes();
-        self.app = express.createServer();
+        self.app = express();
 
         //  Add handlers for the app (from the routes).
         for (var r in self.routes) {
             self.app.get(r, self.routes[r]);
         }
+        self.proxy = httpProxy.createProxyServer({target: 'http://api.themoviedb.org:80'});
+        
+        self.wss = new WebSocketServer({port:1337});
+        
+        self.wss.on('connection', function(ws) {
+            ws.on('message', function(message) {
+                console.log('received: %s', message);
+                ws.send('Received: ' + message);
+            });
+            ws.send('something');
+        });
     };
 
 
@@ -156,7 +179,7 @@ var SampleApp = function() {
 /**
  *  main():  Main code.
  */
-var zapp = new SampleApp();
-zapp.initialize();
-zapp.start();
+var app = new BheemServer();
+app.initialize();
+app.start();
 
