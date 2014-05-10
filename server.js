@@ -2,7 +2,7 @@
 //  OpenShift sample Node application
 var express = require('express');
 var fs      = require('fs');
-
+var connection = require('./services/mysql/mysql');
 
 /**
  *  Define the sample application.
@@ -102,6 +102,9 @@ var SampleApp = function() {
 
         self.routes['/'] = function(req, res) {
             res.setHeader('Content-Type', 'text/html');
+            var query = connection.query('INSERT INTO USER SET ?', req.query, function(err, result) {
+              // Neat!
+            });
             res.send(self.cache_get('index.html') );
         };
     };
