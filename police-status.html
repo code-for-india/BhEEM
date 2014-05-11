@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>BhEEM Saves!</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/bootstrap-responsive.min.css">
+    <link rel="stylesheet" href="css/bootstrap-theme.min.css">
+    <link rel=stylesheet href=css/bheem.css>
+    <link rel=stylesheet href=css/rescue.css>
+</head>
+<body>
+<div class="rescue-cta-container police-status-container">
+    <h2 id="status">Police Station is being informed!</h2>
+    {{POLICE_ADDRESS}}
+
+    <div class="notepad">
+        <div id="speech" style="">&nbsp;
+            <span id="text" contenteditable="true"></span>
+            <span id="notfinal"></span>
+            <span id="warning"></span>
+        </div>
+        <div id="container">
+            <input type="button" class="btn btn-rescue btn-success" onclick="send({which: 13})" value="Send">
+        </div>
+        <div id="log" style="display: none;"></div>
+        <div class="whatisthis">
+        <span id="messages">
+          <a href="#" onclick="javascript:action();return false;" id="btn"></a>
+          <a href="#" onclick="javascript:clearSlate();return false;" id="btnClear"></a>
+          <a href="#" onclick="" id="btnClear" title=""></a>
+            <span id="status"></span>
+        </span>
+        </div>
+    </div>
+
+
+
+    <span id="iam" style="display: none;"></span>
+    <div id="rooms" style="display: none;"></div>
+
+</div>
+</body>
+<script src="js/speech-to-text.js"></script>
+<script>
+    updateLang(8);
+    clearSlate();
+    action();
+</script>
+<script src="js/text-rtc.js"></script>
+<script>
+    TextShare.init();
+
+    document.getElementById('text').addEventListener("keydown", send, false);
+    function send(e){
+        if(e.which === 13) {
+            var d = document.getElementById("text").innerHTML;
+            TextShare.send(d)
+            clearSlate();
+            document.getElementById("text").innerHTML = "  ";
+        }
+    }
+    var statusMsg = "You are now connected to Police."
+    var he = "Police";
+    var me = "You"
+
+</script>
+
+</html>

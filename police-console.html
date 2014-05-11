@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>POLICE CONSOLE</title>
+    <style>
+        button{
+            height: 100px;
+            width: 200px;
+            font-weight: bolder;
+            font-size: xx-large;
+        }
+        #text{
+            width: 400px;
+            border: black 1px solid;
+        }
+        #log{
+            display: none;
+            border: black 1px solid;
+            width: 400px;
+            height: 250px;
+            overflow: scroll;
+        }
+        #container{
+            display:none;
+        }
+        #histext {
+            font-weight: bolder;
+            color: #0000ff;
+        }
+        #mytext {
+            font-style: italic;
+            font-weight: bolder;
+        }
+    </style>
+</head>
+<body>
+POLICE CONSOLE
+<span id="iam" style="display: none"></span>
+<br/>
+
+<div id="rooms"></div>
+<div id="log"></div>
+<div id="container">
+    <input type="text" id="text" onkeydown="send">
+    <input type="button" onclick="TextShare.send()" value="Send">
+</div>
+<script src="js/text-rtc.js"></script>
+<script>
+    TextShare.init();
+    document.getElementById('text').addEventListener("keydown", send, false);
+    function send(e){
+        if(e.which === 13) {TextShare.send()}
+    }
+    TextShare.createInvite("BhEEM");
+    var he = "Victim";
+    var me = "Police"
+</script>
+</body>
+</html>

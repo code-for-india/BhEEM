@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>BhEEM Saves!</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/bootstrap-responsive.min.css">
+    <link rel=stylesheet href=css/bheem.css>
+    <link rel=stylesheet href=css/rescue.css>
+<script type="text/javascript">
+    var websocket = new WebSocket("ws://localhost:1337/");
+    websocket.onopen = function(event) {
+        // The connection was opened
+    }; 
+    websocket.onclose = function(event) { 
+        // The connection was closed
+    }; 
+    websocket.onmessage = function(event) {
+        var message = event.data;
+        console.log(message);
+    }; 
+    websocket.onerror = function(event) { 
+        // There was an error with your WebSocket
+    };
+    function sendMessage(msg) {
+        if (websocket.readyState === WebSocket.OPEN) {
+            websocket.send(msg);
+        } else {
+            console.log('Websocket state: ' + websocket.readyState);
+        }
+    }
+</script>
+</head>
+<body>
+    <div class="rescue-cta-container">
+        <p><a class="rescue-link" href="helpme"><button class="btn btn-danger btn-rescue-cta">help me!</button></a></p>
+        <p><a class="rescue-link" href="helper"><button class="btn btn-danger btn-rescue-cta">I want to help</button></a></p>
+    </div>
+</body>
+</html>

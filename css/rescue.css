@@ -1,0 +1,109 @@
+.btn-rescue, .btn-rescue-cta {
+    padding: 1em 1.8em;
+    font-size: 2em;
+    line-height: 2;
+    border-radius: 0.8em;
+    text-transform: uppercase;
+    font-style: italic;
+    margin: auto auto;
+    min-width: 50%;
+}
+
+.btn-rescue-cta {
+    background-color: #9C1C17;
+    background-image: linear-gradient(to bottom,#E62C27,#B90E05);
+}
+
+.btn-rescue-cta:hover, .btn-rescue-cta:focus {
+    background-color: #B90E05;
+    outline: 0 none;
+}
+
+.map-container, .rescue-cta-container {
+    margin: auto;
+    position: absolute;
+    top: 0; left: 0; bottom: 0; right: 0;
+}
+
+.map-canvas {
+    width: 100%;
+    height: 100%;
+}
+
+.rescue-cta-container {
+    height: 17em;
+    text-align: center;
+}
+
+.rescue-type-container {
+    height: 29em;
+}
+
+.police-status-container {
+    height: auto;
+    position: static;
+}
+
+.police-status-container #status {
+    background: #ddd;
+    display: block !important;
+}
+
+.police-status-container #log {
+    display: block;
+    width: 90%;
+    border: 3px inset #AAA;
+    margin: 1em auto;
+    color: #000;
+    padding: 1em;
+    /* box-shadow: inset 0px 0px 11px 0px #FFF; */
+    font-family: monospace;
+    text-align: left;
+    background: #FFF;
+}
+
+.police-status-container #container {
+    display: inline-block;
+    right: 5%;
+}
+
+
+
+.police-status-container #speech {
+    width: 75%;
+    border: 1px solid #AAA;
+    margin: 1em auto;
+    color: #DDD;
+    padding: 1em;
+    box-shadow: inset 0px 0px 11px 0px #FFF;
+    font-family: monospace;
+    text-align: left;
+    display: inline-block;
+}
+
+.police-status-container .panel {
+    width: 30%;
+    margin: 0 auto;
+    background: #fff;
+}
+
+.police-status-container .panel, .police-status-container .panel-heading, .police-status-container .panel-body {
+    border-radius: 0.4em;
+}
+
+.police-status-container .panel-body {
+    padding-bottom: 0.4em;
+}
+
+.police-status-container .panel-title {
+    line-height: 2.8em;
+}
+
+.btn-rescue-type {
+    clear: left;
+    min-width: 50%;
+}
+
+.glyphicon-police, .glyphicon-fire {
+    margin-top: 1em;
+}

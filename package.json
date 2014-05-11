@@ -27,7 +27,8 @@
     "http-proxy": ">=1.1.2",
     "mysql": ">=2.2.0",
     "portfinder": ">=0.2.1",
-    "ws": ">=0.4.31"
+    "ws": ">=0.4.31",
+    "googleplaces": "~0.0.1"
   },
   "devDependencies": {},
   "bundleDependencies": [],

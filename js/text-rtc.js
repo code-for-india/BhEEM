@@ -1,0 +1,197 @@
+var TextShare = (function () {
+    var userid,
+        offerPeer,
+        answerPeer,
+        STUN,
+        TURN,
+        websocket,
+        config = {},
+        rooms,
+        invite,
+        userAndRoomMap,
+        status,
+        type,
+        interval,
+        channel;
+
+    var init = function () {
+            websocket = new WebSocket('ws://127.0.0.1:1337');
+            STUN = {url: 'stun:stun.l.google.com:19302'};
+            TURN = {"username":"amitesh:1393412082","credential":"NGFmNGRlMjIxOWZmMTVjMzMxMDliYzUzZDIxOWE1OWI0NTBmZGZiNg==","url":"turn:10.0.0.2:3333?transport=udp"};
+
+            config.iceServers = [STUN, TURN];
+
+            userid = Math.round((Math.random() * 1e6) | 0);
+
+            rooms = document.getElementById('rooms');
+            //invite = document.getElementById('police');
+
+            userAndRoomMap = {};
+            status = 'not-joined';
+            type = null;
+            document.getElementById("iam").innerHTML = userid;
+            websocket = startSignaling(checkInvites);
+        },
+        renderJoinButton = function (data) {
+            if (status !== "not-joined") return true;
+            userAndRoomMap[data.roomid] = data;
+            console.log("Invite Found render Join");
+
+            //invite.style.display = 'none';
+            clearInterval(interval);
+            join("BhEEM");
+        },
+        startSignaling = function(callback) {
+            websocket.onopen = function () {
+                websocket.send(JSON.stringify({start: true}));
+            };
+            websocket.onmessage = function (e) {
+                console.log("got", e.data);
+                callback(JSON.parse(e.data));
+            };
+            return websocket;
+        },
+        renderUI = function(){
+            rooms.innerHTML = "Connected ....";
+            if(document.getElementById('status')) {
+                document.getElementById('status').innerHTML = statusMsg || "Connected";
+                document.getElementById("container").style.display = "inline-block";
+                document.getElementById("log").style.display = "block";
+
+            } else {
+                document.getElementById("container").style.display = "inline-block";
+                document.getElementById("log").style.display = "block";
+            }
+        },
+        checkInvites = function(data) {
+            console.log(data, userAndRoomMap);
+            if (data.roomid && status === "not-joined") renderJoinButton(data);
+            if (data.target !== userid) { console.log("User ID missmatched data.target !== userid", data.target, userid); return; }
+            clearInterval(interval);
+            if (data.status === "sdp") {
+                var sdp = data.sdp;
+
+                console.log(sdp.type);
+                console.log(sdp.sdp);
+                if (sdp.type === 'offer') {
+                    createAnswer(data);
+                    type = "Answer";
+                    console.log("creating Offer");
+                }
+                if (sdp.type === 'answer') {
+                    setRemoteDescription(sdp);
+                    console.log("Answer Found");
+                }
+            }
+            if (data.candidate) {
+                if (type === "Offer") addOfferIceCandidate(data.candidate);
+                if (type === "Answer") addAnswerIceCandidate(data.candidate);
+            }
+            if (data.status === "createOffer") {
+                console.log("Creating Offer");
+                createOffer(data);
+                type = "Offer";
+            }
+        },
+        createInvite = function(room) {
+            interval = setInterval(function(){
+                var object = {"roomid": room, "source": userid};
+                websocket.send(JSON.stringify(object));
+            }, 1000);
+            rooms.innerHTML = '............';
+            //invite.style.display = 'none';
+            status = "waiting";
+        },
+        join = function (roomid) {
+            console.log(userAndRoomMap);
+            var room = userAndRoomMap[roomid];
+            console.log("joining", room);
+            var object = {"target": userid, "roomid": "BhEEM", "source": room.source, "status": 'createOffer'};
+            websocket.send(JSON.stringify(object));
+            status = "creatingOffer";
+        },
+        openDataChannel = function(peer){
+            try {
+                channel = peer.createDataChannel("sendDataChannel", {reliable: false});
+            } catch (e) {
+                console.log('DataChannel : ', e);
+            }
+            channel.onopen = manageChannel;
+            channel.onclose = manageChannel;
+        },
+        createOffer = function(data) {
+            offerPeer = new window.webkitRTCPeerConnection(config,  {optional: [{RtpDataChannels: true}]});
+
+            openDataChannel(offerPeer);
+
+            offerPeer.onicecandidate = function (event) {
+                if (!event.candidate) {
+                    var object = {"sdp": offerPeer.localDescription, "target": data.source, "source": userid, "roomid": data.roomid, "status": "sdp"};
+                    websocket.send(JSON.stringify(object));
+                }
+            };
+            offerPeer.createOffer(function(sdp) { offerPeer.setLocalDescription(sdp); });
+            console.log(offerPeer);
+        },
+
+        setRemoteDescription = function (sdp) {
+            offerPeer.setRemoteDescription(new RTCSessionDescription(sdp));
+        },
+        addOfferIceCandidate = function (candidate) {
+            offerPeer.addIceCandidate(new RTCIceCandidate({
+                sdpMLineIndex: candidate.sdpMLineIndex,
+                candidate: candidate.candidate,
+                sdpMid: candidate.sdpMid
+            }));
+        },
+        createAnswer = function(data) {
+            answerPeer = new window.webkitRTCPeerConnection(config,  {optional: [{RtpDataChannels: true}]});
+            openDataChannel(answerPeer);
+
+            answerPeer.onicecandidate = function(event) {
+                var object = {"candidate": event.candidate, "target": data.source, "source": userid, "roomid": data.roomid, "status": "candidate"};
+                websocket.send(JSON.stringify(object));
+            };
+
+            answerPeer.setRemoteDescription(new RTCSessionDescription(data.sdp));
+
+            answerPeer.createAnswer(function(sdp) {
+                answerPeer.setLocalDescription(sdp);
+                var object = {"sdp": sdp, "target": data.source, "source": userid, "roomid": data.roomid, "status": "sdp"};
+                websocket.send(JSON.stringify(object));
+            });
+
+            console.log(answerPeer);
+        },
+        addAnswerIceCandidate = function(candidate) {
+            answerPeer.addIceCandidate(new RTCIceCandidate({
+                sdpMLineIndex: candidate.sdpMLineIndex,
+                candidate: candidate.candidate,
+                sdpMid: candidate.sdpMid
+            }));
+        },
+        sendData = function(data){
+
+            data = data || document.getElementById('text').value;
+            channel.send(data);
+            document.getElementById('log').innerHTML += '<div id="mytext"> '+ me + ': ' + data + '</div>';
+            document.getElementById('text').value = "";
+            document.getElementById('text').focus();
+        },
+        onMsg = function(e){
+            document.getElementById('log').innerHTML += '<div id="histext">'+ he + ': ' + e.data + '</div>';
+        },
+        manageChannel = function(){
+            console.log("CHANNEL STATE CHANGEED", channel);
+            if (channel.readyState === "open") {
+                channel.onmessage = onMsg;
+                renderUI();
+            }
+        };
+    return{
+        init: init,
+        createInvite: createInvite,
+        join: join,
+        send: sendData
+    };
+}());
