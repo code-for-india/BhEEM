@@ -28,10 +28,16 @@
     "mysql": ">=2.2.0",
     "portfinder": ">=0.2.1",
     "ws": ">=0.4.31",
-    "googleplaces": "~0.0.1"
+    "googleplaces": "~0.0.1",
+    "snyk": "^1.316.1"
   },
   "devDependencies": {},
   "bundleDependencies": [],
   "private": true,
-  "main": "server.js"
+  "main": "server.js",
+  "scripts": {
+    "snyk-protect": "snyk protect",
+    "prepublish": "npm run snyk-protect"
+  },
+  "snyk": true
 }
